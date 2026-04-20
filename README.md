@@ -44,24 +44,24 @@ The core logic is complete and tested. All UI-independent.
 
 ## Still To Build
 
-**Day 2 — Mock data + Submit Return screen**
+**Mock data + Submit Return screen**
 - `data/customers.csv` — 20 mock customers spanning full trust spectrum
 - `data/items.csv` — 20 mock items across categories and price tiers
 - `utils/data_loader.py` — CSV loading with Streamlit caching
 - `ui/submit_return.py` — customer/item selector, return reason, decision result with score breakdown
 - `app.py` — entry point with sidebar navigation (Screen 1 live)
 
-**Day 3 — Dashboard**
+**Dashboard**
 - `scripts/generate_history.py` — generates 50 historical returns via the engine
 - `data/returns_history.csv` — pre-seeded history for dashboard
 - `ui/dashboard.py` — KPI metrics, charts by reason and category, filterable returns table
 
-**Day 4 — Explainer + Polish**
+**Explainer + Polish**
 - `ui/explainer.py` — interactive weight sliders, threshold sensitivity chart
 - `ui/scenarios.py` — side-by-side scenario comparison (optional)
 - Visual polish: color palette, page config, color-coded decision badges
 
-**Day 5 — Screenshots + Prep**
+**Screenshots + Prep**
 - Capture screenshots of all screens for slide deck
 - Demo walk-through of key scenarios (Scenario A/B/C)
 
