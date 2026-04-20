@@ -2,75 +2,104 @@
 
 A prototype decision engine for e-commerce returns that determines refund outcomes at the moment of drop-off, rather than after warehouse inspection.
 
-Built for HBS Digital Operations — Spring 2026. Team: Mikel Acha, Taylor Joyce, Rahul Kilambi, Kolade Lawal, Kelly Petrino.
+Built for HBS Digital Operations — Spring 2026.
+Team: Mikel Acha, Taylor Joyce, Rahul Kilambi, Kolade Lawal, Kelly Petrino.
 
 ---
 
 ## How to Run
 
 ```bash
-pip install -r requirements.txt
-streamlit run app.py
+pip3 install -r requirements.txt
+python3 -m streamlit run app.py
 ```
 
-To verify the scoring logic in isolation:
+Then open http://localhost:8501 in your browser.
+
+To verify the scoring logic in isolation (no UI required):
 
 ```bash
-python test_engine.py
+python3 test_engine.py
 ```
 
 ---
 
-## What's Been Built
+## How It Works
 
-### Decision Engine (`engine/`)
+The engine evaluates every return request against three inputs:
 
-The core logic is complete and tested. All UI-independent.
+1. **Customer trust score** — account tenure, return rate, fraud flags
+2. **Item risk score** — price tier, category, resale viability, days since purchase
+3. **Return reason modifier** — defective/wrong item reduce risk; changed mind increases it
 
-- **`engine/models.py`** — `Customer`, `Item`, and `ReturnRequest` dataclasses. Computed properties handle `return_rate`, `price_tier`, and `trust_score` automatically.
-- **`engine/scoring.py`** — Three scoring functions that combine into a final risk score (0–100):
-  - Customer trust score (tenure, return rate, fraud flags)
-  - Item risk score (price tier, category, resale viability, age)
-  - Return reason modifier
-  - Weighted composite: trust 40% / item 35% / reason 25%
-  - Returns a full score breakdown dict for UI display
-- **`engine/rules.py`** — Hard override rules applied before scoring: multiple fraud flags → always flag; item >$500 → always flag; item <$10 → always approve; wrong item shipped → always approve.
+These combine into a weighted composite risk score (0–100). Returns below 45 are auto-approved for an instant refund; at or above 45 they're flagged for inspection.
 
-### Tests
-
-- **`test_engine.py`** — Five hand-crafted scenarios covering the full risk spectrum (trusted customer, new account, fraud-flagged, high-value item, high return rate). All route correctly.
+Before scoring, four hard override rules apply:
+- 2+ fraud flags → always flag
+- Item over $500 → always flag
+- Item under $10 → always approve
+- Wrong item shipped → always approve (retailer error)
 
 ---
 
-## Still To Build
+## Screens
 
-**Mock data + Submit Return screen**
-- `data/customers.csv` — 20 mock customers spanning full trust spectrum
-- `data/items.csv` — 20 mock items across categories and price tiers
-- `utils/data_loader.py` — CSV loading with Streamlit caching
-- `ui/submit_return.py` — customer/item selector, return reason, decision result with score breakdown
-- `app.py` — entry point with sidebar navigation (Screen 1 live)
+**Submit a Return** — Select a customer and item, choose a return reason, and submit. The engine displays the decision instantly with a full score breakdown showing how each component contributed.
 
-**Dashboard**
-- `scripts/generate_history.py` — generates 50 historical returns via the engine
-- `data/returns_history.csv` — pre-seeded history for dashboard
-- `ui/dashboard.py` — KPI metrics, charts by reason and category, filterable returns table
+**Dashboard** — Aggregate view of all returns: KPI metrics (total, auto-approved %, flagged %, avg risk score), decisions by return reason, returns by category, risk score distribution with the threshold marked, and a filterable returns table.
 
-**Explainer + Polish**
-- `ui/explainer.py` — interactive weight sliders, threshold sensitivity chart
-- `ui/scenarios.py` — side-by-side scenario comparison (optional)
-- Visual polish: color palette, page config, color-coded decision badges
+**Score Explainer** — Interactive weight sliders let you adjust how much customer history, item risk, and return reason each contribute. The example scenario re-routes live. A threshold sensitivity chart shows how many returns would flip decision at each cutoff value.
 
-**Screenshots + Prep**
-- Capture screenshots of all screens for slide deck
-- Demo walk-through of key scenarios (Scenario A/B/C)
+**Scenario Comparison** — Three contrasting returns side by side: a trusted customer with a defective item (auto-approved, score ~13), a new account with electronics and a changed-mind reason (flagged, score ~48), and a fraud-flagged customer where the hard rule fires before scoring even starts.
 
 ---
 
-## Key Dates
+## Project Structure
 
-| Date | Milestone |
-|------|-----------|
-| Apr 15 | Progress report due — engine core complete |
-| Apr 22 | Showcase — 10-min presentation |
-| Apr 25 | Final submission (deck PDF + peer feedback poll) |
+```
+dig_ops/
+├── app.py                    # Streamlit entry point + sidebar navigation
+├── requirements.txt
+├── test_engine.py            # Standalone scoring smoke tests
+│
+├── engine/
+│   ├── models.py             # Customer, Item, ReturnRequest dataclasses
+│   ├── scoring.py            # Trust score, item risk, composite score, routing
+│   └── rules.py              # Hard override rules
+│
+├── data/
+│   ├── customers.csv         # 20 mock customers spanning full trust spectrum
+│   ├── items.csv             # 20 mock items across categories and price tiers
+│   └── returns_history.csv   # 50 pre-seeded historical returns for dashboard
+│
+├── ui/
+│   ├── submit_return.py      # Screen 1: submit a return and see decision
+│   ├── dashboard.py          # Screen 2: aggregate returns dashboard
+│   ├── explainer.py          # Screen 3: interactive weight and threshold explorer
+│   └── scenarios.py          # Screen 4: side-by-side scenario comparison
+│
+├── utils/
+│   ├── data_loader.py        # Cached CSV loading
+│   └── formatters.py         # Color badges and score labels
+│
+└── scripts/
+    └── generate_history.py   # Regenerates returns_history.csv via the engine
+```
+
+---
+
+## Demo Script
+
+Three scenarios to walk through live:
+
+**Scenario A — Easy approve**
+Customer: Sarah Chen · Item: Cotton T-Shirt · Reason: Defective
+→ Expected: score ~13, instant refund approved
+
+**Scenario B — Flagged by score**
+Customer: James Park · Item: Wireless Headphones · Reason: Changed mind
+→ Expected: score ~48, flagged for inspection
+
+**Scenario C — Hard rule**
+Customer: Alex M. · Item: anything · Reason: anything
+→ Expected: hard rule fires (2 fraud flags), flagged immediately — no score shown

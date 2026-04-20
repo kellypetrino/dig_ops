@@ -107,8 +107,9 @@ def render():
 
     # ── Risk score distribution ────────────────────────────────────────────────
     st.subheader("Risk Score Distribution")
+    scored_df = df[df["hard_rule"].isna() | (df["hard_rule"] == "")]
     fig_hist = px.histogram(
-        df[df["hard_rule"] == ""],  # exclude hard-rule overrides from score distribution
+        scored_df,  # exclude hard-rule overrides from score distribution
         x="risk_score",
         color="decision",
         color_discrete_map=DECISION_COLORS,

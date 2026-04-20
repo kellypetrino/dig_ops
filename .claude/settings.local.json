@@ -6,7 +6,8 @@
       "Bash(python3 -c \"from engine.scoring import compute_trust_score; from engine.rules import apply_hard_rules; print\\('imports ok'\\)\")",
       "Bash(python3 -m streamlit run app.py --server.headless true)",
       "Bash(python3 scripts/generate_history.py)",
-      "Bash(python3 -c \"from ui import dashboard; print\\('dashboard import ok'\\)\")"
+      "Bash(python3 -c \"from ui import dashboard; print\\('dashboard import ok'\\)\")",
+      "Bash(python3 -c \"import pandas as pd; df = pd.read_csv\\('data/returns_history.csv'\\); print\\(df['hard_rule'].dtype\\); print\\(df['hard_rule'].unique\\(\\)\\); print\\(df['hard_rule'].isna\\(\\).sum\\(\\)\\)\")"
     ]
   }
 }

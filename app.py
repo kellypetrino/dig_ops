@@ -6,11 +6,13 @@ st.set_page_config(
     layout="wide",
 )
 
-from ui import submit_return, dashboard
+from ui import submit_return, dashboard, explainer, scenarios
 
 SCREENS = {
     "Submit a Return": submit_return,
     "Dashboard": dashboard,
+    "Score Explainer": explainer,
+    "Scenario Comparison": scenarios,
 }
 
 st.sidebar.title("↩️ Refund Engine")
