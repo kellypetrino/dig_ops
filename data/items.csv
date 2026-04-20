@@ -1,0 +1,21 @@
+item_id,name,category,price,resale_viability,days_since_purchase
+ITEM-001,Cotton T-Shirt,apparel,25.00,high,5
+ITEM-002,Denim Jacket,apparel,89.00,high,12
+ITEM-003,Running Shoes,apparel,75.00,medium,10
+ITEM-004,Winter Coat,apparel,180.00,high,8
+ITEM-005,Wireless Headphones,electronics,120.00,medium,20
+ITEM-006,Bluetooth Speaker,electronics,65.00,high,15
+ITEM-007,Laptop Stand,electronics,45.00,high,7
+ITEM-008,Smartwatch,electronics,320.00,medium,18
+ITEM-009,DSLR Camera,electronics,650.00,high,14
+ITEM-010,Face Serum,beauty,45.00,none,22
+ITEM-011,Moisturizer Set,beauty,28.00,none,9
+ITEM-012,Perfume,beauty,90.00,low,30
+ITEM-013,Electric Toothbrush,beauty,55.00,low,11
+ITEM-014,Coffee Table Book,books,32.00,high,45
+ITEM-015,Cookbook,books,24.00,high,60
+ITEM-016,Textbook,books,85.00,medium,35
+ITEM-017,Throw Blanket,home_goods,38.00,high,6
+ITEM-018,Scented Candle Set,home_goods,22.00,medium,14
+ITEM-019,Cast Iron Pan,home_goods,75.00,high,21
+ITEM-020,Air Purifier,home_goods,195.00,medium,9

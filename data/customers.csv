@@ -1,0 +1,21 @@
+customer_id,name,account_tenure_days,lifetime_orders,total_returns,fraud_flags
+CUST-001,Sarah Chen,950,85,8,0
+CUST-002,Marcus Williams,820,60,5,0
+CUST-003,Priya Patel,1100,120,14,0
+CUST-004,James Okafor,730,55,9,0
+CUST-005,Elena Russo,900,70,6,0
+CUST-006,Tyler Brooks,400,28,5,0
+CUST-007,Aisha Nkosi,320,22,4,0
+CUST-008,Daniel Kim,500,35,7,0
+CUST-009,Sofia Mendez,280,18,3,0
+CUST-010,Chris Huang,450,30,6,0
+CUST-011,Devon Riley,200,30,16,0
+CUST-012,Rachel Nguyen,150,20,12,0
+CUST-013,Jordan Lee,380,25,11,0
+CUST-014,Brianna Scott,90,12,6,0
+CUST-015,Omar Hassan,310,18,9,0
+CUST-016,Alex M.,400,20,13,2
+CUST-017,Tanya Ivanova,60,8,5,1
+CUST-018,Kevin Marsh,180,15,10,2
+CUST-019,James Park,15,2,1,0
+CUST-020,Nina Volkov,25,3,2,1

@@ -1,0 +1,51 @@
+return_id,customer,item,category,return_reason,risk_score,decision,hard_rule,submitted_at
+RET-1000,James Okafor,Cotton T-Shirt,apparel,changed_mind,21.5,auto_approved,,2026-04-12 22:16:01
+RET-1001,Daniel Kim,Wireless Headphones,electronics,changed_mind,35.0,auto_approved,,2026-03-29 22:16:01
+RET-1002,Kevin Marsh,Running Shoes,apparel,sizing_issue,100.0,flagged_inspection,multiple_fraud_flags,2026-04-18 22:16:01
+RET-1003,Sarah Chen,Running Shoes,apparel,wrong_item,0.0,auto_approved,retailer_error,2026-04-03 22:16:01
+RET-1004,Nina Volkov,Cotton T-Shirt,apparel,sizing_issue,47.0,flagged_inspection,,2026-03-28 22:16:01
+RET-1005,Kevin Marsh,Coffee Table Book,books,wrong_item,100.0,flagged_inspection,multiple_fraud_flags,2026-04-01 22:16:01
+RET-1006,Sofia Mendez,Cotton T-Shirt,apparel,changed_mind,24.7,auto_approved,,2026-04-14 22:16:01
+RET-1007,Brianna Scott,Moisturizer Set,beauty,wrong_item,0.0,auto_approved,retailer_error,2026-04-13 22:16:01
+RET-1008,Devon Riley,Winter Coat,apparel,defective,37.2,auto_approved,,2026-04-16 22:16:01
+RET-1009,Rachel Nguyen,Perfume,beauty,sizing_issue,43.5,auto_approved,,2026-03-25 22:16:01
+RET-1010,Marcus Williams,Cookbook,books,sizing_issue,20.1,auto_approved,,2026-03-21 22:16:01
+RET-1011,Jordan Lee,Running Shoes,apparel,sizing_issue,30.2,auto_approved,,2026-03-24 22:16:01
+RET-1012,Nina Volkov,Perfume,beauty,sizing_issue,57.5,flagged_inspection,,2026-03-28 22:16:01
+RET-1013,Priya Patel,Denim Jacket,apparel,sizing_issue,22.5,auto_approved,,2026-03-26 22:16:01
+RET-1014,Chris Huang,Running Shoes,apparel,changed_mind,27.9,auto_approved,,2026-03-23 22:16:01
+RET-1015,James Okafor,Electric Toothbrush,beauty,wrong_item,0.0,auto_approved,retailer_error,2026-03-30 22:16:01
+RET-1016,Rachel Nguyen,Bluetooth Speaker,electronics,not_as_described,39.8,auto_approved,,2026-04-13 22:16:01
+RET-1017,Sofia Mendez,Running Shoes,apparel,sizing_issue,27.4,auto_approved,,2026-04-14 22:16:01
+RET-1018,Kevin Marsh,Smartwatch,electronics,defective,100.0,flagged_inspection,multiple_fraud_flags,2026-04-07 22:16:01
+RET-1019,Sofia Mendez,Scented Candle Set,home_goods,wrong_item,0.0,auto_approved,retailer_error,2026-04-09 22:16:01
+RET-1020,Marcus Williams,Smartwatch,electronics,changed_mind,40.8,auto_approved,,2026-03-25 22:16:01
+RET-1021,Devon Riley,Electric Toothbrush,beauty,wrong_item,0.0,auto_approved,retailer_error,2026-04-13 22:16:01
+RET-1022,James Park,Moisturizer Set,beauty,wrong_item,0.0,auto_approved,retailer_error,2026-04-04 22:16:01
+RET-1023,Jordan Lee,Cookbook,books,defective,19.8,auto_approved,,2026-04-15 22:16:01
+RET-1024,Daniel Kim,Scented Candle Set,home_goods,sizing_issue,21.9,auto_approved,,2026-03-27 22:16:01
+RET-1025,James Park,Coffee Table Book,books,changed_mind,40.0,auto_approved,,2026-04-07 22:16:01
+RET-1026,Rachel Nguyen,Smartwatch,electronics,changed_mind,54.8,flagged_inspection,,2026-04-15 22:16:01
+RET-1027,Tanya Ivanova,Textbook,books,defective,43.0,auto_approved,,2026-04-18 22:16:01
+RET-1028,James Okafor,Wireless Headphones,electronics,sizing_issue,31.2,auto_approved,,2026-03-25 22:16:01
+RET-1029,Brianna Scott,Air Purifier,home_goods,defective,33.0,auto_approved,,2026-04-07 22:16:01
+RET-1030,Nina Volkov,Cookbook,books,sizing_issue,48.0,flagged_inspection,,2026-04-02 22:16:01
+RET-1031,Sarah Chen,Winter Coat,apparel,sizing_issue,29.5,auto_approved,,2026-04-02 22:16:01
+RET-1032,Sofia Mendez,Moisturizer Set,beauty,defective,24.7,auto_approved,,2026-04-06 22:16:01
+RET-1033,Tyler Brooks,Cookbook,books,defective,15.0,auto_approved,,2026-03-27 22:16:01
+RET-1034,Sofia Mendez,Throw Blanket,home_goods,changed_mind,28.2,auto_approved,,2026-04-03 22:16:01
+RET-1035,James Okafor,Face Serum,beauty,changed_mind,33.8,auto_approved,,2026-04-03 22:16:01
+RET-1036,Nina Volkov,Laptop Stand,electronics,defective,51.2,flagged_inspection,,2026-03-26 22:16:01
+RET-1037,Tyler Brooks,Scented Candle Set,home_goods,changed_mind,24.4,auto_approved,,2026-03-21 22:16:01
+RET-1038,Tanya Ivanova,Cotton T-Shirt,apparel,sizing_issue,43.0,auto_approved,,2026-04-04 22:16:01
+RET-1039,Sarah Chen,Winter Coat,apparel,changed_mind,32.0,auto_approved,,2026-03-22 22:16:01
+RET-1040,Chris Huang,Smartwatch,electronics,defective,33.2,auto_approved,,2026-03-22 22:16:01
+RET-1041,James Park,Running Shoes,apparel,defective,32.0,auto_approved,,2026-04-04 22:16:01
+RET-1042,Priya Patel,Scented Candle Set,home_goods,changed_mind,23.2,auto_approved,,2026-04-15 22:16:01
+RET-1043,Alex M.,Scented Candle Set,home_goods,defective,100.0,flagged_inspection,multiple_fraud_flags,2026-04-03 22:16:01
+RET-1044,Nina Volkov,Coffee Table Book,books,changed_mind,54.0,flagged_inspection,,2026-03-21 22:16:01
+RET-1045,Kevin Marsh,Laptop Stand,electronics,changed_mind,100.0,flagged_inspection,multiple_fraud_flags,2026-04-07 22:16:01
+RET-1046,Rachel Nguyen,Cookbook,books,changed_mind,36.5,auto_approved,,2026-04-05 22:16:01
+RET-1047,James Okafor,Smartwatch,electronics,wrong_item,0.0,auto_approved,retailer_error,2026-04-09 22:16:01
+RET-1048,Sarah Chen,Cast Iron Pan,home_goods,sizing_issue,22.5,auto_approved,,2026-04-01 22:16:01
+RET-1049,Daniel Kim,Cotton T-Shirt,apparel,defective,13.9,auto_approved,,2026-03-30 22:16:01
