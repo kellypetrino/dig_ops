@@ -7,6 +7,7 @@ from engine.rules import apply_hard_rules, RULE_DESCRIPTIONS
 from utils.data_loader import load_customers, load_items
 from utils.formatters import decision_badge, risk_label, trust_label
 from utils import db
+from utils.db import get_config
 
 
 RETURN_REASONS = {
@@ -123,6 +124,10 @@ def _show_decision(customer: Customer, item: Item, reason: str):
     st.markdown("---")
     st.subheader("Decision")
 
+    cfg = get_config()
+    weights = {"trust": cfg["w_trust"], "item": cfg["w_item"], "reason": cfg["w_reason"]}
+    threshold = cfg["threshold"]
+
     decision_override, rule_name = apply_hard_rules(customer, item, reason)
 
     if decision_override:
@@ -146,8 +151,8 @@ def _show_decision(customer: Customer, item: Item, reason: str):
     # Score-based routing
     trust = compute_trust_score(customer)
     item_risk = compute_item_risk_score(item)
-    score, breakdown = compute_final_risk_score(trust, item_risk, reason)
-    decision = route_return(score)
+    score, breakdown = compute_final_risk_score(trust, item_risk, reason, weights=weights)
+    decision = route_return(score, threshold=threshold)
 
     risk_lbl, risk_color = risk_label(score)
     badge = decision_badge(decision)
@@ -162,7 +167,7 @@ def _show_decision(customer: Customer, item: Item, reason: str):
         )
 
     with col_score:
-        st.metric("Risk Score", f"{score:.0f} / 100", help="Score below 45 = auto-approved. 45 or above = flagged.")
+        st.metric("Risk Score", f"{score:.0f} / 100", help=f"Score below {threshold:.0f} = auto-approved. {threshold:.0f} or above = flagged.")
         st.markdown(
             f"<span style='color:{risk_color};font-weight:600'>{risk_lbl}</span>",
             unsafe_allow_html=True,

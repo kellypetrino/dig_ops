@@ -85,3 +85,52 @@ def reset_live_returns():
     conn.execute("DELETE FROM returns WHERE source = 'live'")
     conn.commit()
     conn.close()
+
+
+# ── Scoring config ─────────────────────────────────────────────────────────────
+
+DEFAULT_CONFIG = {
+    "threshold": 45.0,
+    "w_trust": 0.40,
+    "w_item": 0.35,
+    "w_reason": 0.25,
+}
+
+
+def _ensure_config_table(conn):
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS config (
+            key   TEXT PRIMARY KEY,
+            value REAL
+        )
+    """)
+    conn.commit()
+
+
+def get_config() -> dict:
+    """Return the active scoring config. Falls back to defaults if unset."""
+    if not DB_PATH.exists():
+        return DEFAULT_CONFIG.copy()
+    conn = sqlite3.connect(DB_PATH)
+    _ensure_config_table(conn)
+    rows = conn.execute("SELECT key, value FROM config").fetchall()
+    conn.close()
+    if not rows:
+        return DEFAULT_CONFIG.copy()
+    stored = {k: v for k, v in rows}
+    # Fill in any missing keys with defaults
+    return {k: stored.get(k, v) for k, v in DEFAULT_CONFIG.items()}
+
+
+def save_config(config: dict):
+    """Persist the scoring config. Only saves known keys."""
+    conn = sqlite3.connect(DB_PATH)
+    _ensure_config_table(conn)
+    for key in DEFAULT_CONFIG:
+        if key in config:
+            conn.execute(
+                "INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)",
+                (key, float(config[key])),
+            )
+    conn.commit()
+    conn.close()

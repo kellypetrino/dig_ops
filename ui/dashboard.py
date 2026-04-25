@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 
-from utils.db import load_returns, reset_live_returns
+from utils.db import load_returns, reset_live_returns, get_config
 
 
 DECISION_COLORS = {
@@ -33,6 +33,7 @@ def render():
     st.caption("Aggregate view of return decisions across all submissions.")
 
     df = load_returns()
+    threshold = get_config()["threshold"]
 
     if df.empty:
         st.info("No return data yet. Submit a return on the previous screen to get started.")
@@ -110,8 +111,8 @@ def render():
         nbins=20,
         labels={"risk_score": "Risk Score", "count": "# Returns", "decision": "Decision"},
     )
-    fig_hist.add_vline(x=45, line_dash="dash", line_color="#6b7280",
-                       annotation_text="Threshold (45)", annotation_position="top right")
+    fig_hist.add_vline(x=threshold, line_dash="dash", line_color="#6b7280",
+                       annotation_text=f"Threshold ({threshold:.0f})", annotation_position="top right")
     fig_hist.update_layout(
         legend_title_text="",
         legend=dict(orientation="h", yanchor="bottom", y=1.02),

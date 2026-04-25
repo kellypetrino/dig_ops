@@ -12,6 +12,7 @@ from engine.scoring import (
 )
 from engine.rules import apply_hard_rules
 from utils.data_loader import load_customers, load_items
+from utils.db import get_config, save_config
 
 
 RETURN_REASONS = {
@@ -31,6 +32,8 @@ PRESET_REASON = "sizing_issue"
 def render():
     st.header("Score Explainer")
     st.caption("Understand how the engine scores a return and what happens when you change the rules.")
+
+    cfg = get_config()
 
     # ── Section 1: How the formula works ──────────────────────────────────────
     st.subheader("How the Score is Calculated")
@@ -74,23 +77,54 @@ def render():
 
     # ── Section 2: Interactive weight adjustment ───────────────────────────────
     st.subheader("Adjust the Weights")
-    st.caption(
-        "Drag the sliders to change how much each dimension contributes. "
-        "Watch how it changes the decision for the example scenario below."
-    )
+
+    col_header, col_badge = st.columns([3, 1])
+    with col_header:
+        st.caption(
+            "Drag the sliders to change how much each dimension contributes. "
+            "Save to make these the active weights used by the Submit screen."
+        )
+    with col_badge:
+        st.markdown(
+            f"<div style='text-align:right;font-size:12px;color:#6b7280;padding-top:4px'>"
+            f"Active: trust {cfg['w_trust']:.0%} / item {cfg['w_item']:.0%} / "
+            f"reason {cfg['w_reason']:.0%} / threshold {cfg['threshold']:.0f}</div>",
+            unsafe_allow_html=True,
+        )
 
     col_sliders, col_preview = st.columns([1, 1])
 
     with col_sliders:
-        w_trust = st.slider("Customer trust weight", 0, 100, 40, step=5, key="w_trust") / 100
-        w_item = st.slider("Item risk weight", 0, 100, 35, step=5, key="w_item") / 100
-        w_reason = st.slider("Return reason weight", 0, 100, 25, step=5, key="w_reason") / 100
+        w_trust = st.slider(
+            "Customer trust weight", 0, 100,
+            int(cfg["w_trust"] * 100), step=5, key="w_trust"
+        ) / 100
+        w_item = st.slider(
+            "Item risk weight", 0, 100,
+            int(cfg["w_item"] * 100), step=5, key="w_item"
+        ) / 100
+        w_reason = st.slider(
+            "Return reason weight", 0, 100,
+            int(cfg["w_reason"] * 100), step=5, key="w_reason"
+        ) / 100
         total_weight = w_trust + w_item + w_reason
 
         if abs(total_weight - 1.0) > 0.01:
             st.warning(f"Weights sum to {total_weight:.0%} — they should sum to 100%. Scores will be scaled accordingly.")
 
-        threshold = st.slider("Approval threshold", 20, 70, 45, step=5, key="threshold")
+        threshold = st.slider(
+            "Approval threshold", 20, 70,
+            int(cfg["threshold"]), step=5, key="threshold"
+        )
+
+        if st.button("Save as active config", type="primary"):
+            save_config({
+                "threshold": threshold,
+                "w_trust": w_trust,
+                "w_item": w_item,
+                "w_reason": w_reason,
+            })
+            st.success("Config saved. The Submit screen will use these weights and threshold.")
 
     with col_preview:
         st.markdown("**Example scenario**")
