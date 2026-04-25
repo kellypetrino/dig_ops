@@ -15,9 +15,9 @@ The app demonstrates an alternative to the traditional e-commerce returns workfl
 
 It has four screens:
 
-**Submit a Return** — The core demo. Select a customer from the mock database, select an item, and choose a return reason. The engine evaluates the request and returns a decision in real time, along with a score breakdown showing exactly how much each factor contributed. New submissions carry over to the dashboard within the same session.
+**Submit a Return** — The core demo. Select a customer from the mock database, select an item, and choose a return reason. The engine evaluates the request and returns a decision in real time, along with a score breakdown and a color-coded risk bar showing exactly where the score lands. Submissions are written to a local SQLite database and persist across page refreshes.
 
-**Dashboard** — An aggregate view of return activity. Shows KPI metrics (total returns, auto-approval rate, flagged rate, average risk score), a stacked bar chart of decisions broken down by return reason, a donut chart of returns by product category, a risk score distribution histogram with the approval threshold marked, and a filterable table of all return records.
+**Dashboard** — An aggregate view of return activity. Shows KPI metrics (total returns, auto-approval rate, flagged rate, average risk score), a stacked bar chart of decisions broken down by return reason, a donut chart of returns by product category, a risk score distribution histogram with the approval threshold marked, and a filterable table of all return records. Includes a CSV download button and an admin reset control.
 
 **Score Explainer** — An interactive tool for understanding and stress-testing the engine's logic. Weight sliders let you adjust how much customer history, item risk, and return reason each contribute to the final score; an example scenario re-routes live as you drag. A threshold sensitivity chart shows how many of the 50 seeded returns would flip decision at each possible cutoff value. Includes a reference table of all return reason modifiers.
 
@@ -73,6 +73,8 @@ A production deployment would track approval rates, fraud rates, inspection back
 pip3 install -r requirements.txt
 python3 -m streamlit run app.py
 ```
+
+On first run, the app creates a local `returns.db` SQLite database and seeds it with the 50 historical returns from `data/returns_history.csv`. Submissions made through the UI are written to this database and persist across page refreshes. The database file is excluded from version control via `.gitignore`.
 
 To verify the scoring logic without the UI:
 
