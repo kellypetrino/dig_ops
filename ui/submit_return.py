@@ -6,6 +6,7 @@ from engine.scoring import compute_trust_score, compute_item_risk_score, compute
 from engine.rules import apply_hard_rules, RULE_DESCRIPTIONS
 from utils.data_loader import load_customers, load_items
 from utils.formatters import decision_badge, risk_label, trust_label
+from utils import db
 
 
 RETURN_REASONS = {
@@ -104,12 +105,12 @@ def render():
 
     # ── Return reason ──────────────────────────────────────────────────────────
     st.markdown("---")
-    reason_label = st.selectbox(
+    reason_label_val = st.selectbox(
         "Return reason",
         options=list(RETURN_REASONS.values()),
         key="reason_select",
     )
-    reason_key = [k for k, v in RETURN_REASONS.items() if v == reason_label][0]
+    reason_key = [k for k, v in RETURN_REASONS.items() if v == reason_label_val][0]
 
     # ── Submit ─────────────────────────────────────────────────────────────────
     submitted = st.button("Submit Return for Decision", type="primary", use_container_width=True)
@@ -125,7 +126,6 @@ def _show_decision(customer: Customer, item: Item, reason: str):
     decision_override, rule_name = apply_hard_rules(customer, item, reason)
 
     if decision_override:
-        # Hard rule fired
         decision = decision_override
         badge = decision_badge(decision)
         badge_color = "#057a55" if decision == "auto_approved" else "#c81e1e"
@@ -136,7 +136,11 @@ def _show_decision(customer: Customer, item: Item, reason: str):
         )
         st.info(f"**Policy override:** {RULE_DESCRIPTIONS[rule_name]}")
 
-        _save_to_session(customer, item, reason, decision, 0.0 if decision == "auto_approved" else 100.0, {}, rule_name)
+        return_id = _save_to_db(
+            customer, item, reason, decision,
+            0.0 if decision == "auto_approved" else 100.0, {}, rule_name
+        )
+        st.success(f"Return {return_id} logged.")
         return
 
     # Score-based routing
@@ -164,7 +168,21 @@ def _show_decision(customer: Customer, item: Item, reason: str):
             unsafe_allow_html=True,
         )
 
-    # Score breakdown table
+    # Visual score bar
+    bar_pct = min(max(score, 0), 100)
+    st.markdown(
+        f"""<div style="background:#e5e7eb;border-radius:6px;height:12px;margin:8px 0">
+  <div style="width:{bar_pct:.0f}%;background:{badge_color};border-radius:6px;height:12px"></div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-bottom:16px">
+  <span>0 — Low Risk</span>
+  <span style="color:{badge_color};font-weight:600">Score: {score:.0f}</span>
+  <span>100 — High Risk</span>
+</div>""",
+        unsafe_allow_html=True,
+    )
+
+    # Score breakdown
     st.markdown("#### Score Breakdown")
     col1, col2, col3 = st.columns(3)
 
@@ -193,17 +211,13 @@ def _show_decision(customer: Customer, item: Item, reason: str):
         unsafe_allow_html=True,
     )
 
-    _save_to_session(customer, item, reason, decision, score, breakdown, None)
+    return_id = _save_to_db(customer, item, reason, decision, score, breakdown, None)
+    st.success(f"Return {return_id} logged.")
 
 
-def _save_to_session(customer, item, reason, decision, score, breakdown, rule_name):
-    if "new_returns" not in st.session_state:
-        st.session_state["new_returns"] = []
-
-    import random
-    return_id = f"RET-{random.randint(1000, 9999)}"
-
-    st.session_state["new_returns"].append({
+def _save_to_db(customer, item, reason, decision, score, breakdown, rule_name):
+    return_id = f"RET-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    db.save_return({
         "return_id": return_id,
         "customer": customer.name,
         "item": item.name,
@@ -214,3 +228,4 @@ def _save_to_session(customer, item, reason, decision, score, breakdown, rule_na
         "hard_rule": rule_name or "",
         "submitted_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     })
+    return return_id

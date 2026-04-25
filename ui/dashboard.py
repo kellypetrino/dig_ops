@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from datetime import datetime
 
-from utils.data_loader import load_history
+from utils.db import load_returns, reset_live_returns
 
 
 DECISION_COLORS = {
@@ -31,14 +32,7 @@ def render():
     st.header("Returns Dashboard")
     st.caption("Aggregate view of return decisions across all submissions.")
 
-    history_df = load_history()
-
-    # Merge in any new returns submitted this session
-    if st.session_state.get("new_returns"):
-        session_df = pd.DataFrame(st.session_state["new_returns"])
-        df = pd.concat([history_df, session_df], ignore_index=True) if not history_df.empty else session_df
-    else:
-        df = history_df
+    df = load_returns()
 
     if df.empty:
         st.info("No return data yet. Submit a return on the previous screen to get started.")
@@ -109,7 +103,7 @@ def render():
     st.subheader("Risk Score Distribution")
     scored_df = df[df["hard_rule"].isna() | (df["hard_rule"] == "")]
     fig_hist = px.histogram(
-        scored_df,  # exclude hard-rule overrides from score distribution
+        scored_df,
         x="risk_score",
         color="decision",
         color_discrete_map=DECISION_COLORS,
@@ -171,3 +165,18 @@ def render():
             "submitted_at": "Submitted",
         },
     )
+
+    # ── Download ───────────────────────────────────────────────────────────────
+    st.download_button(
+        label="Download returns as CSV",
+        data=df.to_csv(index=False).encode("utf-8"),
+        file_name=f"returns_{datetime.now().strftime('%Y%m%d')}.csv",
+        mime="text/csv",
+    )
+
+    # ── Admin ──────────────────────────────────────────────────────────────────
+    with st.expander("Admin"):
+        st.caption("Reset removes all live submissions. Seed data (50 historical returns) is preserved.")
+        if st.button("Reset live returns", type="secondary"):
+            reset_live_returns()
+            st.rerun()
