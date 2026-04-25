@@ -13,13 +13,15 @@ Team: Mikel Acha, Taylor Joyce, Rahul Kilambi, Kolade Lawal, Kelly Petrino.
 
 The app demonstrates an alternative to the traditional e-commerce returns workflow, where customers drop off a return and wait days for a warehouse team to inspect it before a refund is issued. Instead, the engine makes a routing decision at the moment of drop-off — instantly approving low-risk returns and flagging high-risk ones for inspection.
 
-It has four screens:
+It has five screens:
 
 **Submit a Return** — The core demo. Select a customer from the mock database, select an item, and choose a return reason. The engine evaluates the request and returns a decision in real time, along with a score breakdown and a color-coded risk bar showing exactly where the score lands. Submissions are written to a local SQLite database and persist across page refreshes.
 
 **Dashboard** — An aggregate view of return activity. Shows KPI metrics (total returns, auto-approval rate, flagged rate, average risk score), a stacked bar chart of decisions broken down by return reason, a donut chart of returns by product category, a risk score distribution histogram with the approval threshold marked, and a filterable table of all return records. Includes a CSV download button and an admin reset control.
 
-**Score Explainer** — An interactive tool for understanding and stress-testing the engine's logic. Weight sliders let you adjust how much customer history, item risk, and return reason each contribute to the final score; an example scenario re-routes live as you drag. A threshold sensitivity chart shows how many of the 50 seeded returns would flip decision at each possible cutoff value. Includes a reference table of all return reason modifiers.
+**Inspection Queue** — The operational close of the loop. Returns flagged by the engine appear here for warehouse staff to review. Each card shows the customer, item, return reason, and risk score (or the hard rule that triggered the flag). Staff can approve after physical inspection — issuing the refund — or confirm fraud, which updates the customer's record. Resolved returns are archived in a collapsible section below the active queue. The nav label shows a live count of pending items.
+
+**Score Explainer** — An interactive tool for understanding and configuring the engine's logic. Weight sliders let you adjust how much customer history, item risk, and return reason each contribute to the final score; an example scenario re-routes live as you drag. A threshold sensitivity chart shows how many of the 50 seeded returns would flip decision at each possible cutoff value. Saving the configuration here updates the live engine — all subsequent submissions use the new weights and threshold. Includes a reference table of all return reason modifiers.
 
 **Scenario Comparison** — Three contrasting returns shown side by side to illustrate what the engine discriminates on: a trusted customer with a defective low-value item (score ~13, auto-approved), a new account returning mid-value electronics with a discretionary reason (score ~48, flagged), and a fraud-flagged customer where a hard policy rule fires before scoring even begins.
 
@@ -60,7 +62,7 @@ Right now a decision is made and nothing happens next. A production system would
 The engine would sit inside the retailer's existing returns portal, not as a standalone tool. Auto-approved decisions would trigger a refund API call directly. Flagged returns would create work orders in the warehouse management system. Customers would receive real-time notifications with their outcome.
 
 **Inspection workflow**
-Flagged returns need somewhere to go. A real system would include a queue interface for warehouse staff to process inspections, record outcomes, and escalate fraud cases — which in turn update the customer's fraud flag count.
+The prototype includes a working inspection queue: flagged returns surface for staff review, can be approved or confirmed as fraud, and the outcome updates the customer's record. A production system would integrate this queue with the warehouse management system, auto-generate work orders, and feed fraud confirmations back into the customer's risk profile in real time.
 
 **Monitoring**
 A production deployment would track approval rates, fraud rates, inspection backlog, and cost savings over time. Alerting would fire if the auto-approval rate shifts unexpectedly, which could indicate model drift or a new fraud pattern.

@@ -21,8 +21,24 @@ def init_db(history_csv_path=None):
             decision     TEXT,
             hard_rule    TEXT,
             submitted_at TEXT,
-            source       TEXT DEFAULT 'live'
+            source       TEXT DEFAULT 'live',
+            status       TEXT DEFAULT 'completed'
         )
+    """)
+    conn.commit()
+
+    # Add status column to existing DBs that predate this field
+    try:
+        conn.execute("ALTER TABLE returns ADD COLUMN status TEXT DEFAULT 'completed'")
+        conn.commit()
+    except Exception:
+        pass  # Column already exists
+
+    # Set correct initial statuses for any existing flagged rows missing a status
+    conn.execute("""
+        UPDATE returns SET status = 'pending_inspection'
+        WHERE decision = 'flagged_inspection'
+        AND (status IS NULL OR status = 'completed')
     """)
     conn.commit()
 
@@ -32,6 +48,9 @@ def init_db(history_csv_path=None):
             df = pd.read_csv(history_csv_path)
             df["source"] = "seed"
             df["hard_rule"] = df["hard_rule"].fillna("")
+            df["status"] = df["decision"].apply(
+                lambda d: "pending_inspection" if d == "flagged_inspection" else "completed"
+            )
             df.to_sql("returns", conn, if_exists="append", index=False)
 
     conn.close()
@@ -39,17 +58,54 @@ def init_db(history_csv_path=None):
 
 def save_return(record: dict):
     """Insert a new return record. Silently replaces on duplicate return_id."""
+    status = "pending_inspection" if record.get("decision") == "flagged_inspection" else "completed"
     conn = sqlite3.connect(DB_PATH)
     conn.execute(
         """
         INSERT OR REPLACE INTO returns
             (return_id, customer, item, category, return_reason,
-             risk_score, decision, hard_rule, submitted_at, source)
+             risk_score, decision, hard_rule, submitted_at, source, status)
         VALUES
             (:return_id, :customer, :item, :category, :return_reason,
-             :risk_score, :decision, :hard_rule, :submitted_at, 'live')
+             :risk_score, :decision, :hard_rule, :submitted_at, 'live', :status)
         """,
-        record,
+        {**record, "status": status},
+    )
+    conn.commit()
+    conn.close()
+
+
+def load_pending_inspection() -> pd.DataFrame:
+    """Return all flagged returns awaiting inspection, oldest first."""
+    if not DB_PATH.exists():
+        return pd.DataFrame()
+    conn = sqlite3.connect(DB_PATH)
+    df = pd.read_sql(
+        "SELECT * FROM returns WHERE status = 'pending_inspection' ORDER BY submitted_at ASC",
+        conn,
+    )
+    conn.close()
+    return df
+
+
+def count_pending_inspection() -> int:
+    """Count flagged returns awaiting inspection."""
+    if not DB_PATH.exists():
+        return 0
+    conn = sqlite3.connect(DB_PATH)
+    count = conn.execute(
+        "SELECT COUNT(*) FROM returns WHERE status = 'pending_inspection'"
+    ).fetchone()[0]
+    conn.close()
+    return count
+
+
+def resolve_return(return_id: str, outcome: str):
+    """Mark a return as resolved. outcome must be 'inspection_approved' or 'fraud_confirmed'."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute(
+        "UPDATE returns SET status = ? WHERE return_id = ?",
+        (outcome, return_id),
     )
     conn.commit()
     conn.close()

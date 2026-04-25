@@ -8,14 +8,18 @@ st.set_page_config(
 )
 
 from utils import db
-from ui import submit_return, dashboard, explainer, scenarios
+from ui import submit_return, dashboard, explainer, scenarios, inspection_queue
 
 DATA_DIR = Path(__file__).parent / "data"
 db.init_db(DATA_DIR / "returns_history.csv")
 
+pending = db.count_pending_inspection()
+queue_label = f"Inspection Queue ({pending})" if pending > 0 else "Inspection Queue"
+
 SCREENS = {
     "Submit a Return": submit_return,
     "Dashboard": dashboard,
+    queue_label: inspection_queue,
     "Score Explainer": explainer,
     "Scenario Comparison": scenarios,
 }
